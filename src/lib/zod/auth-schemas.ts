@@ -9,6 +9,10 @@ export const signUpSchema = z.object({
 
 export type TSignUpSchema = z.infer<typeof signUpSchema>;
 
+export const signInSchema = signUpSchema.omit({ name: true });
+
+export type TSignInSchema = z.infer<typeof signUpSchema>;
+
 export const userResponseSchema = z.object({
   name: z.string(),
   email: z.string(),
