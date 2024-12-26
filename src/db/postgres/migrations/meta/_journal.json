@@ -8,6 +8,13 @@
       "when": 1735222055244,
       "tag": "0000_init_users_table",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1735222935873,
+      "tag": "0001_init_auth_table",
+      "breakpoints": true
     }
   ]
 }
