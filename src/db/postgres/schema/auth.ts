@@ -1,11 +1,13 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { users } from "./users";
 
 export const authType = pgEnum("auth_type", ["email", "google"]);
 
 export const auth = pgTable("auth", {
-  id: uuid().primaryKey(),
+  id: uuid()
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   userId: uuid()
     .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" })
     .notNull(),
