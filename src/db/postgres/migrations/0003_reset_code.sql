@@ -1,0 +1,1 @@
+ALTER TABLE "auth" ADD COLUMN "pass_reset_code" text;

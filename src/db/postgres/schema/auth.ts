@@ -14,6 +14,7 @@ export const auth = pgTable("auth", {
   authType: authType().notNull(),
   email: text().notNull(),
   hashedPass: text(),
+  passResetCode: text(),
   refreshToken: text(),
 });
 

@@ -23,3 +23,8 @@ export const userResponseSchema = z.object({
 export const refreshTokenPayloadSchema = z.object({
   id: z.string(),
 });
+
+export const resetPasswordSchema = z.object({
+  code: z.string(),
+  newPassword: z.string().min(6),
+});

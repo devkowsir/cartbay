@@ -26,7 +26,7 @@ export const POST = async (req: NextRequest) => {
       status: 200,
       statusText: "Successfully signed in.",
     });
-    response.cookies.set("token", getToken({ id: user.userId }), {
+    response.cookies.set("token", getToken({ id: user.id }), {
       maxAge: TOKEN_AGE,
       httpOnly: true,
       sameSite: "strict",

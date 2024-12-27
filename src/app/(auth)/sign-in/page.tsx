@@ -27,6 +27,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 const Page = () => {
+  const [isReseting, setIsReseting] = useState(false);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isPasswordResetDialogShown, setIsPasswordResetDialogShown] = useState(false);
   const { toast } = useToast();
@@ -34,6 +35,7 @@ const Page = () => {
     register,
     handleSubmit,
     formState: { isSubmitting },
+    getValues,
   } = useForm<Schema>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
@@ -56,15 +58,21 @@ const Page = () => {
   };
 
   const handleForgotPassword = async () => {
+    setIsReseting(true);
     try {
-      //
+      const email = getValues("email");
+      const response = await fetch(`/api/auth/reset-password?email=${email}`);
+      if (!response.ok) throw new Error(response.statusText);
+      toast({ title: "A password reset link has been sent." });
     } catch (err) {
       if (err instanceof Error) toast({ title: err.message, variant: "destructive" });
       else toast({ title: "Something went wrong!", variant: "destructive" });
+    } finally {
+      setIsReseting(false);
     }
   };
 
-  const handleGoogleSignUp = async () => {};
+  const handleGoogleSignIn = async () => {};
 
   return (
     <div className="flex flex-col gap-2">
@@ -82,12 +90,12 @@ const Page = () => {
           />
           {isPasswordShown ? (
             <Eye
-              className="absolute bottom-2 right-2 w-4 text-foreground/75 cursor-pointer"
+              className="absolute bottom-2.5 right-2 w-4 text-foreground/75 cursor-pointer"
               onClick={() => setIsPasswordShown((prev) => !prev)}
             />
           ) : (
             <EyeOff
-              className="absolute bottom-2 right-2 w-4 text-foreground/75 cursor-pointer"
+              className="absolute bottom-2.5 right-2 w-4 text-foreground/75 cursor-pointer"
               onClick={() => setIsPasswordShown((prev) => !prev)}
             />
           )}
@@ -129,7 +137,7 @@ const Page = () => {
         <hr className="border-border/25 border-t" />
       </div>
       <div>
-        <Button className="w-full flex items-center gap-2" variant={"outline"} onClick={handleGoogleSignUp}>
+        <Button className="w-full flex items-center gap-2" variant={"outline"} onClick={handleGoogleSignIn}>
           <BiLogoGoogle className="fill-current stroke-current" />
           Sign In with Google
         </Button>
@@ -138,12 +146,14 @@ const Page = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Confirm Email</DialogTitle>
-            <DialogDescription>We will send a password reset email. Please confirm your email.</DialogDescription>
+            <DialogDescription className="text-foreground/50">
+              We will send a password reset email. Please confirm your email.
+            </DialogDescription>
           </DialogHeader>
           <Input labelText="Email" type="email" className="col-span-3" {...register("email")} autoFocus={false} />
           <DialogFooter>
-            <Button type="button" onClick={handleForgotPassword}>
-              Send Email
+            <Button type="button" onClick={handleForgotPassword} disabled={isReseting}>
+              {isReseting ? "Sending Email" : "Send Email"}
             </Button>
           </DialogFooter>
         </DialogContent>

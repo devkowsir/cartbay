@@ -56,12 +56,12 @@ const Page = () => {
           />
           {isPasswordVisible ? (
             <LuEye
-              className="absolute bottom-2 right-2 w-4 text-foreground/75 cursor-pointer"
+              className="absolute bottom-2.5 right-2 w-4 text-foreground/75 cursor-pointer"
               onClick={() => setIsPasswordVisible((prev) => !prev)}
             />
           ) : (
             <LuEyeOff
-              className="absolute bottom-2 right-2 w-4 text-foreground/75 cursor-pointer"
+              className="absolute bottom-2.5 right-2 w-4 text-foreground/75 cursor-pointer"
               onClick={() => setIsPasswordVisible((prev) => !prev)}
             />
           )}
