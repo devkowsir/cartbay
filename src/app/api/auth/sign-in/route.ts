@@ -1,10 +1,8 @@
 import { TOKEN_AGE } from "@/config";
-import db from "@/db/postgres";
-import { auth, users } from "@/db/postgres/schema";
 import { getToken } from "@/lib/utils";
 import { signInSchema, userResponseSchema } from "@/lib/zod/auth-schemas";
+import { getUserData } from "@/services/auth";
 import bcrypt from "bcrypt";
-import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
@@ -16,23 +14,19 @@ export const POST = async (req: NextRequest) => {
 
     const { email, password } = data;
 
-    const [foundUser] = await db
-      .select()
-      .from(auth)
-      .where(and(eq(auth.email, email), eq(auth.authType, "email")))
-      .innerJoin(users, eq(users.id, auth.userId));
+    const user = await getUserData(email, "email");
 
-    if (!foundUser) return new NextResponse(null, { status: 401, statusText: `User not found with email ${email}` });
+    if (!user) return new NextResponse(null, { status: 401, statusText: `User not found with email ${email}` });
 
-    const isPasswordValid = await bcrypt.compare(password, foundUser.auth.hashedPass!);
+    const isPasswordValid = await bcrypt.compare(password, user.hashedPass!);
 
     if (!isPasswordValid) return new NextResponse(null, { status: 401, statusText: `Password did not match.` });
 
-    const response = new NextResponse(JSON.stringify(userResponseSchema.parse(foundUser.users)), {
+    const response = new NextResponse(JSON.stringify(userResponseSchema.parse(user)), {
       status: 200,
       statusText: "Successfully signed in.",
     });
-    response.cookies.set("token", getToken(foundUser.users), {
+    response.cookies.set("token", getToken({ id: user.userId }), {
       maxAge: TOKEN_AGE,
       httpOnly: true,
       sameSite: "strict",

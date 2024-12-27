@@ -1,10 +1,9 @@
 import { TOKEN_AGE } from "@/config";
 import db from "@/db/postgres";
-import { auth, users } from "@/db/postgres/schema";
 import { getToken } from "@/lib/utils";
 import { signUpSchema, userResponseSchema } from "@/lib/zod/auth-schemas";
+import { createAuth, createUser, getUserData } from "@/services/auth";
 import bcrypt from "bcrypt";
-import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
@@ -16,10 +15,7 @@ export const POST = async (req: NextRequest) => {
 
     const { email, name, password } = data;
 
-    const [userExist] = await db
-      .select()
-      .from(auth)
-      .where(and(eq(auth.email, email), eq(auth.authType, "email")));
+    const userExist = await getUserData(email, "email");
 
     if (userExist)
       return new NextResponse(null, { status: 409, statusText: `User already exists with email ${email}` });
@@ -27,8 +23,8 @@ export const POST = async (req: NextRequest) => {
     const hashedPass = await bcrypt.hash(password, 10);
 
     const user = await db.transaction(async (tx) => {
-      const [user] = await db.insert(users).values({ email, name }).returning();
-      await db.insert(auth).values({ userId: user.id, authType: "email", email, hashedPass });
+      const user = await createUser({ email, name });
+      await createAuth({ userId: user.id, authType: "email", email, hashedPass });
       return user;
     });
 
