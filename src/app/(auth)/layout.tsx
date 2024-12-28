@@ -4,6 +4,7 @@ import { Montserrat } from "next/font/google";
 import Image from "next/image";
 import { ReactNode } from "react";
 
+import UrlMessages from "@/components/url-messages";
 import "../globals.css";
 
 const fontMontserrat = Montserrat({ subsets: ["latin"] });
@@ -37,6 +38,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
         <Toaster />
+        <UrlMessages />
       </body>
     </html>
   );
