@@ -1,4 +1,4 @@
-import { getToken } from "@/lib/utils";
+import { getToken } from "@/lib/jwt";
 import { signInSchema } from "@/lib/zod/auth-schemas";
 import { getUserData } from "@/services/auth";
 import bcrypt from "bcrypt";

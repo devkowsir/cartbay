@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SearchParams } from "next/dist/server/request/search-params";
 import { redirect, RedirectType, useRouter } from "next/navigation";
 import { use, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -18,7 +17,7 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-const Page = ({ searchParams }: { searchParams: Promise<SearchParams> }) => {
+const Page = ({ searchParams }: { searchParams: Promise<{ code: string | null }> }) => {
   const router = useRouter();
   const { code } = use(searchParams);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -81,7 +80,7 @@ const Page = ({ searchParams }: { searchParams: Promise<SearchParams> }) => {
         </div>
         <div className="relative">
           <Input
-            type={isPasswordVisible ? "text" : "password"}
+            type={isConfirmPasswordVisible ? "text" : "password"}
             labelText="Confirm Password"
             placeholder="Confirm password"
             minLength={6}

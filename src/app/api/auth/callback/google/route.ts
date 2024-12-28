@@ -1,6 +1,6 @@
 import { GOOGLE_REDIRECT_URL } from "@/config";
 import db from "@/db/postgres";
-import { getToken } from "@/lib/utils";
+import { getToken } from "@/lib/jwt";
 import { createAuth, createUser, getUserData } from "@/services/auth";
 import { GoogleUserInfo, GoogleUserTokens, User } from "@/types/auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -48,7 +48,7 @@ export const GET = async (req: NextRequest) => {
       return NextResponse.redirect(`${failureRedirect}?error=you_are_not_registered_using_google_sign-in_method.`);
 
     if (!foundUser) {
-      user = await db.transaction(async (tx) => {
+      user = await db.transaction(async () => {
         const newUser = await createUser({
           name: googleUserInfo.name,
           email: googleUserInfo.email,

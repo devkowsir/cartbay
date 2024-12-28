@@ -1,5 +1,5 @@
 import db from "@/db/postgres";
-import { getToken } from "@/lib/utils";
+import { getToken } from "@/lib/jwt";
 import { signUpSchema } from "@/lib/zod/auth-schemas";
 import { createAuth, createUser, getUserData } from "@/services/auth";
 import bcrypt from "bcrypt";
@@ -21,7 +21,7 @@ export const POST = async (req: NextRequest) => {
 
     const hashedPass = await bcrypt.hash(password, 10);
 
-    const user = await db.transaction(async (tx) => {
+    const user = await db.transaction(async () => {
       const user = await createUser({ email, name });
       await createAuth({ userId: user.id, authType: "email", email, hashedPass });
       return user;

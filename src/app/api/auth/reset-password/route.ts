@@ -1,5 +1,5 @@
 import { sendMail } from "@/lib/nodemailer";
-import { validateToken } from "@/lib/utils";
+import { validateToken } from "@/lib/jwt";
 import { resetPasswordSchema } from "@/lib/zod/auth-schemas";
 import { getUserData, setResetPasswordCode, updatePassword } from "@/services/auth";
 import { hash } from "bcrypt";

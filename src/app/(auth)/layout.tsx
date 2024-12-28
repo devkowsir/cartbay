@@ -1,10 +1,10 @@
 import { Toaster } from "@/components/ui/toaster";
-import { Metadata } from "next";
+import UrlMessages from "@/components/url-messages";
+import { type Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import Image from "next/image";
 import { ReactNode } from "react";
 
-import UrlMessages from "@/components/url-messages";
 import "../globals.css";
 
 const fontMontserrat = Montserrat({ subsets: ["latin"] });
