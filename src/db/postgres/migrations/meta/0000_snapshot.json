@@ -38,7 +38,7 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": "'buyer'"
+          "default": "'customer'"
         },
         "phone_number": {
           "name": "phone_number",
@@ -83,7 +83,7 @@
       "name": "user_role",
       "schema": "public",
       "values": [
-        "buyer",
+        "customer",
         "seller",
         "admin"
       ]

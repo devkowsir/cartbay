@@ -110,7 +110,7 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'buyer'"
+          "default": "'customer'"
         },
         "profile": {
           "name": "profile",
@@ -157,7 +157,7 @@
       "name": "user_role",
       "schema": "public",
       "values": [
-        "buyer",
+        "customer",
         "seller",
         "admin"
       ]

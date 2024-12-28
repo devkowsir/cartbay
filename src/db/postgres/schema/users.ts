@@ -12,7 +12,7 @@ export const users = pgTable("users", {
   name: varchar().notNull(),
   email: varchar().unique().notNull(),
   photoUrl: text(),
-  role: userRole().default("buyer").notNull(),
+  role: userRole().default("customer").notNull(),
   profile: json().default({}).notNull(),
   createdAt: timestamp().defaultNow().notNull(),
 });

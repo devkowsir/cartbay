@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "CartBay",
-  description: "Connecting Buyers and Sellers—Securely, Seamlessly, Successfully!",
+  description: "Connecting Customers and Sellers—Securely, Seamlessly, Successfully!",
   icons: ["/images/logo-sm.png", "/images/logo-md.png"],
 };
 
