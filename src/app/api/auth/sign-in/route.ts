@@ -17,6 +17,11 @@ export const POST = async (req: NextRequest) => {
     const user = await getUserData(email);
 
     if (!user) return new NextResponse(null, { status: 401, statusText: `User not found with email ${email}` });
+    if (user.authType !== "email")
+      return new NextResponse(null, {
+        status: 400,
+        statusText: `You are not registered using email and password method.`,
+      });
 
     const isPasswordValid = await bcrypt.compare(password, user.hashedPass!);
 

@@ -9,8 +9,10 @@ export const GET = async (req: NextRequest) => {
     const searchParams = new URL(req.url).searchParams;
     const code = searchParams.get("code");
     const error = searchParams.get("error");
-    const successRedirect = searchParams.get("state");
-    const failureRedirect = `${new URL(req.url).origin}/sign-in`;
+    const state = searchParams.get("state");
+    const origin = new URL(req.url).origin;
+    const successRedirect = (state || origin).replace(/\/$/, "");
+    const failureRedirect = `${origin}/sign-in`;
     console.log("🚀 ~ file: route.ts:14 ~ redirectBaseUrl:", failureRedirect);
 
     if (error) return NextResponse.redirect(`${failureRedirect}?error=${encodeURIComponent(error)}`);
@@ -40,8 +42,10 @@ export const GET = async (req: NextRequest) => {
 
     let user: User | Awaited<ReturnType<typeof getUserData>>;
     const foundUser = await getUserData(googleUserInfo.email);
+
     if (foundUser && foundUser.authType !== "google")
-      return NextResponse.redirect(`${failureRedirect}?error=user_already_exists`);
+      return NextResponse.redirect(`${failureRedirect}?error=you_are_not_registered_using_google_sign-in_method.`);
+
     if (!foundUser) {
       user = await db.transaction(async (tx) => {
         const newUser = await createUser({
@@ -60,7 +64,7 @@ export const GET = async (req: NextRequest) => {
     } else user = foundUser;
 
     return NextResponse.redirect(
-      `${successRedirect || "/"}?success=sign-${googleTokens.refresh_token ? "up" : "in"}_successful.`
+      `${successRedirect}?success=sign-${googleTokens.refresh_token ? "up" : "in"}_successful.`
     );
   } catch (error) {
     console.error(error);
