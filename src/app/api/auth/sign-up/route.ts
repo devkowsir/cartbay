@@ -1,7 +1,6 @@
-import { TOKEN_AGE } from "@/config";
 import db from "@/db/postgres";
 import { getToken } from "@/lib/utils";
-import { signUpSchema, userResponseSchema } from "@/lib/zod/auth-schemas";
+import { signUpSchema } from "@/lib/zod/auth-schemas";
 import { createAuth, createUser, getUserData } from "@/services/auth";
 import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
@@ -28,16 +27,9 @@ export const POST = async (req: NextRequest) => {
       return user;
     });
 
-    const response = new NextResponse(JSON.stringify(userResponseSchema.parse(user)), {
-      status: 201,
-      statusText: "Successfully signed up user.",
-    });
-    response.cookies.set("token", getToken(user), {
-      maxAge: TOKEN_AGE,
-      httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV == "production",
-    });
+    const response = new NextResponse(null, { status: 200, statusText: "Successfully signed in." });
+    const { token, options } = getToken(user);
+    response.cookies.set("token", token, options);
     return response;
   } catch (error) {
     console.error(error);

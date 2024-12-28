@@ -1,5 +1,6 @@
 import { GOOGLE_REDIRECT_URL } from "@/config";
 import db from "@/db/postgres";
+import { getToken } from "@/lib/utils";
 import { createAuth, createUser, getUserData } from "@/services/auth";
 import { GoogleUserInfo, GoogleUserTokens, User } from "@/types/auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -63,9 +64,11 @@ export const GET = async (req: NextRequest) => {
       });
     } else user = foundUser;
 
-    return NextResponse.redirect(
-      `${successRedirect}?success=sign-${googleTokens.refresh_token ? "up" : "in"}_successful.`
-    );
+    const message = `sign-${googleTokens.refresh_token ? "up" : "in"}_successful.`;
+    const response = NextResponse.redirect(`${successRedirect}?success=${message}`);
+    const { token, options } = getToken(user);
+    response.cookies.set("token", token, options);
+    return response;
   } catch (error) {
     console.error(error);
     return new NextResponse(null, {

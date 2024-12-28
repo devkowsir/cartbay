@@ -1,17 +1,15 @@
 import { auth, authType, userRole, users } from "@/db/postgres/schema";
 
-export type AccessTokenPayload = {
+export type TokenPayload = {
+  id: string;
   name: string;
   email: string;
   photoUrl: string | null;
   role: UserRole;
 };
 
-export type RefreshTokenPayload = {
-  id: string;
-};
-
-export type UserRole = typeof userRole.enumValues;
+export type UserRoles = typeof userRole.enumValues;
+export type UserRole = UserRoles[number];
 export type User = typeof users.$inferSelect;
 export type AuthType = typeof authType.enumValues;
 export type Auth = typeof auth.$inferSelect;

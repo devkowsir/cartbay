@@ -1,5 +1,6 @@
 import db from "@/db/postgres";
 import { auth, users } from "@/db/postgres/schema";
+import { UserRole } from "@/types/auth";
 import { eq } from "drizzle-orm";
 
 export const getUserData = async (email: string) => {
@@ -12,7 +13,7 @@ export const getUserData = async (email: string) => {
     email: data.users.email,
     name: data.users.name,
     photoUrl: data.users.photoUrl,
-    role: data.users.role,
+    role: data.users.role as UserRole,
     profile: data.users.profile,
     createdAt: data.users.createdAt,
     authId: data.auth.id,

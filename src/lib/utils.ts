@@ -1,5 +1,5 @@
-import { GOOGLE_REDIRECT_URL } from "@/config";
-import { User } from "@/types/auth";
+import { GOOGLE_REDIRECT_URL, TOKEN_AGE } from "@/config";
+import { TokenPayload } from "@/types/auth";
 import { clsx, type ClassValue } from "clsx";
 import { NotBeforeError, sign, TokenExpiredError, verify } from "jsonwebtoken";
 import { twMerge } from "tailwind-merge";
@@ -9,9 +9,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getToken = (user: Pick<User, "id">) => {
+export const getToken = (user: TokenPayload) => {
   const payload = refreshTokenPayloadSchema.parse(user);
-  return sign(payload, process.env.JWT_SECRET!);
+  return {
+    token: sign(payload, process.env.JWT_SECRET!),
+    options: {
+      maxAge: TOKEN_AGE,
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV == "production",
+    } as const,
+  };
 };
 
 export const validateToken = <T = any>(token: string) => {
