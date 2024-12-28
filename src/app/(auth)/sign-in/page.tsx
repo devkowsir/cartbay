@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { getGoogleSignInUrl } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiLogoGoogle } from "react-icons/bi";
 import { z } from "zod";
@@ -26,7 +27,8 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-const Page = () => {
+const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | null }> }) => {
+  const { redirect } = use(searchParams);
   const [isReseting, setIsReseting] = useState(false);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isPasswordResetDialogShown, setIsPasswordResetDialogShown] = useState(false);
@@ -71,8 +73,6 @@ const Page = () => {
       setIsReseting(false);
     }
   };
-
-  const handleGoogleSignIn = async () => {};
 
   return (
     <div className="flex flex-col gap-2">
@@ -137,10 +137,13 @@ const Page = () => {
         <hr className="border-border/25 border-t" />
       </div>
       <div>
-        <Button className="w-full flex items-center gap-2" variant={"outline"} onClick={handleGoogleSignIn}>
+        <Link
+          className={`${buttonVariants({ variant: "outline", className: "w-full flex items-center gap-2" })}`}
+          href={`${getGoogleSignInUrl(redirect)}`}
+        >
           <BiLogoGoogle className="fill-current stroke-current" />
           Sign In with Google
-        </Button>
+        </Link>
       </div>
       <Dialog open={isPasswordResetDialogShown} onOpenChange={() => setIsPasswordResetDialogShown(false)}>
         <DialogContent className="sm:max-w-[425px]">

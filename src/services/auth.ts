@@ -1,14 +1,9 @@
 import db from "@/db/postgres";
 import { auth, users } from "@/db/postgres/schema";
-import { AuthType } from "@/types/auth";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
-export const getUserData = async (email: string, authType: AuthType[number]) => {
-  const [data] = await db
-    .select()
-    .from(auth)
-    .where(and(eq(auth.email, email), eq(auth.authType, authType)))
-    .innerJoin(users, eq(users.id, auth.userId));
+export const getUserData = async (email: string) => {
+  const [data] = await db.select().from(auth).where(eq(auth.email, email)).innerJoin(users, eq(users.id, auth.userId));
 
   if (!data?.users) return null;
 

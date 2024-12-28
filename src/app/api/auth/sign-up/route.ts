@@ -15,7 +15,7 @@ export const POST = async (req: NextRequest) => {
 
     const { email, name, password } = data;
 
-    const userExist = await getUserData(email, "email");
+    const userExist = await getUserData(email);
 
     if (userExist)
       return new NextResponse(null, { status: 409, statusText: `User already exists with email ${email}` });

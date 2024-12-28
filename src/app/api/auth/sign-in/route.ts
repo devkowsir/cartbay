@@ -14,7 +14,7 @@ export const POST = async (req: NextRequest) => {
 
     const { email, password } = data;
 
-    const user = await getUserData(email, "email");
+    const user = await getUserData(email);
 
     if (!user) return new NextResponse(null, { status: 401, statusText: `User not found with email ${email}` });
 

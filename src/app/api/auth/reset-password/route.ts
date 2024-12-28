@@ -12,7 +12,7 @@ export const GET = async (req: NextRequest) => {
 
     if (!email) return new NextResponse(null, { status: 400, statusText: "Email is required." });
 
-    const user = await getUserData(email, "email");
+    const user = await getUserData(email);
 
     if (!user)
       return new NextResponse(null, {

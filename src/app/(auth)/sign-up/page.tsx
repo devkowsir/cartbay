@@ -1,17 +1,20 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { getGoogleSignInUrl } from "@/lib/utils";
 import { signUpSchema, type TSignUpSchema } from "@/lib/zod/auth-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useForm } from "react-hook-form";
+import { BiLogoGoogle } from "react-icons/bi";
 import { LuEye, LuEyeOff, LuLoaderCircle } from "react-icons/lu";
 import { z } from "zod";
 
-const Page = () => {
+const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | null }> }) => {
+  const { redirect } = use(searchParams);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { toast } = useToast();
   const {
@@ -84,6 +87,21 @@ const Page = () => {
             Sign In
           </Link>
         </span>
+      </div>
+      <div className="my-4 relative">
+        <span className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-sm font-medium bg-background">
+          Or
+        </span>
+        <hr className="border-border/25 border-t" />
+      </div>
+      <div>
+        <Link
+          className={`${buttonVariants({ variant: "outline", className: "w-full flex items-center gap-2" })}`}
+          href={`${getGoogleSignInUrl(redirect)}`}
+        >
+          <BiLogoGoogle className="fill-current stroke-current" />
+          Sign In with Google
+        </Link>
       </div>
     </div>
   );

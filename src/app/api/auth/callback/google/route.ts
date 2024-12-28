@@ -1,0 +1,72 @@
+import { GOOGLE_REDIRECT_URL } from "@/config";
+import db from "@/db/postgres";
+import { createAuth, createUser, getUserData } from "@/services/auth";
+import { GoogleUserInfo, GoogleUserTokens, User } from "@/types/auth";
+import { NextRequest, NextResponse } from "next/server";
+
+export const GET = async (req: NextRequest) => {
+  try {
+    const searchParams = new URL(req.url).searchParams;
+    const code = searchParams.get("code");
+    const error = searchParams.get("error");
+    const successRedirect = searchParams.get("state");
+    const failureRedirect = `${new URL(req.url).origin}/sign-in`;
+    console.log("🚀 ~ file: route.ts:14 ~ redirectBaseUrl:", failureRedirect);
+
+    if (error) return NextResponse.redirect(`${failureRedirect}?error=${encodeURIComponent(error)}`);
+    if (!code) return NextResponse.redirect(`${failureRedirect}?error=auth_code_missing`);
+
+    const tokenRequestResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        code: code,
+        redirect_uri: GOOGLE_REDIRECT_URL!,
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        grant_type: "authorization_code",
+      }),
+    });
+    if (!tokenRequestResponse.ok) NextResponse.redirect(`${failureRedirect}?error=invalid_auth_code`);
+
+    const googleTokens: GoogleUserTokens = await tokenRequestResponse.json();
+
+    const googleUserInfoRequestResponse = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+      headers: { Authorization: `Bearer ${googleTokens.access_token}` },
+    });
+    if (!googleUserInfoRequestResponse.ok) NextResponse.redirect(`${failureRedirect}?error=invalid_access_token`);
+
+    const googleUserInfo: GoogleUserInfo = await googleUserInfoRequestResponse.json();
+
+    let user: User | Awaited<ReturnType<typeof getUserData>>;
+    const foundUser = await getUserData(googleUserInfo.email);
+    if (foundUser && foundUser.authType !== "google")
+      return NextResponse.redirect(`${failureRedirect}?error=user_already_exists`);
+    if (!foundUser) {
+      user = await db.transaction(async (tx) => {
+        const newUser = await createUser({
+          name: googleUserInfo.name,
+          email: googleUserInfo.email,
+          photoUrl: googleUserInfo.picture,
+        });
+        await createAuth({
+          authType: "google",
+          email: googleUserInfo.email,
+          userId: newUser.id,
+          refreshToken: googleTokens.refresh_token || null,
+        });
+        return newUser;
+      });
+    } else user = foundUser;
+
+    return NextResponse.redirect(
+      `${successRedirect || "/"}?success=sign-${googleTokens.refresh_token ? "up" : "in"}_successful.`
+    );
+  } catch (error) {
+    console.error(error);
+    return new NextResponse(null, {
+      status: 500,
+      statusText: error instanceof Error ? error.message : "Something went wrong!",
+    });
+  }
+};
