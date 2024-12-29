@@ -15,6 +15,7 @@ import { getGoogleSignInUrl } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { use, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiLogoGoogle } from "react-icons/bi";
@@ -28,6 +29,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | null }> }) => {
+  const router = useRouter();
   const { redirect } = use(searchParams);
   const [isReseting, setIsReseting] = useState(false);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
@@ -48,9 +50,7 @@ const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | nul
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error(response.statusText);
-      const user = await response.json();
-      // store user in memory
-      console.log(user);
+      router.push(redirect ? decodeURIComponent(redirect) : "/");
       toast({ title: "Sign In Successful." });
     } catch (err) {
       console.error(err);
@@ -124,7 +124,7 @@ const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | nul
       </form>
       <div className="text-center text-xs text-foreground/75">
         <span>
-          Don't have account?{" "}
+          Don&apos;t have account?{" "}
           <Link href={"/sign-up"} className={`text-primary text-xs font-semibold`}>
             Sign Up
           </Link>

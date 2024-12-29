@@ -7,6 +7,7 @@ import { getGoogleSignInUrl } from "@/lib/utils";
 import { signUpSchema, type TSignUpSchema } from "@/lib/zod/auth-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { use, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiLogoGoogle } from "react-icons/bi";
@@ -14,6 +15,7 @@ import { LuEye, LuEyeOff, LuLoaderCircle } from "react-icons/lu";
 import { z } from "zod";
 
 const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | null }> }) => {
+  const router = useRouter();
   const { redirect } = use(searchParams);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { toast } = useToast();
@@ -31,9 +33,7 @@ const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | nul
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error(response.statusText);
-      const user = await response.json();
-      // store user in memory
-      console.log(user);
+      router.push(redirect ? decodeURIComponent(redirect) : "/");
       toast({ title: "Sign Up Successful." });
     } catch (err) {
       console.error(err);

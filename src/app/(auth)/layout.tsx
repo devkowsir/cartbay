@@ -21,11 +21,9 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
       <body className="h-dvh">
         <div className="h-full flex justify-center items-center">
           <div className="w-1/2 h-full hidden md:flex items-center bg-primary/10">
-            <img
-              src={"/images/authentication.svg"}
-              alt="Secure Authentication"
-              className="w-full h-full aspect-square object-contain object-center"
-            />
+            <div className="relative w-full h-full">
+              <Image src={"/images/authentication.svg"} alt="Secure Authentication" fill />
+            </div>
           </div>
           <div className="w-full md:w-1/2 h-full flex flex-col justify-center items-center gap-2 bg-primary/10 md:bg-transparent">
             <div className="w-80">

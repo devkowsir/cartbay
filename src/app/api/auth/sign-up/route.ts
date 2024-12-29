@@ -1,5 +1,5 @@
 import db from "@/db/postgres";
-import { getToken } from "@/lib/jwt";
+import { getAuthCookie } from "@/lib/jose";
 import { signUpSchema } from "@/lib/zod/auth-schemas";
 import { createAuth, createUser, getUserData } from "@/services/auth";
 import bcrypt from "bcrypt";
@@ -27,8 +27,10 @@ export const POST = async (req: NextRequest) => {
       return user;
     });
 
+    console.log(user);
+
     const response = new NextResponse(null, { status: 200, statusText: "Successfully signed in." });
-    const { token, options } = getToken(user);
+    const { token, options } = await getAuthCookie(user);
     response.cookies.set("token", token, options);
     return response;
   } catch (error) {

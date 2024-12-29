@@ -1,11 +1,12 @@
 import { TOKEN_AGE } from "@/config";
 import { TokenPayload } from "@/types/auth";
 import { JWTPayload, jwtVerify, SignJWT } from "jose";
+import { tokenPayloadSchema } from "./zod/auth-schemas";
 
 const encodedSecret = new TextEncoder().encode(process.env.SECRET_KEY!);
 
 export const getAuthCookie = async (payload: TokenPayload) => {
-  const token = await signToken(payload, TOKEN_AGE);
+  const token = await signToken(tokenPayloadSchema.parse(payload), TOKEN_AGE);
 
   return {
     token,

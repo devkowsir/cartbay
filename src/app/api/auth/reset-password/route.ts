@@ -1,9 +1,8 @@
+import { signToken, validateToken } from "@/lib/jose";
 import { sendMail } from "@/lib/nodemailer";
-import { validateToken } from "@/lib/jwt";
 import { resetPasswordSchema } from "@/lib/zod/auth-schemas";
 import { getUserData, setResetPasswordCode, updatePassword } from "@/services/auth";
 import { hash } from "bcrypt";
-import { sign } from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
@@ -20,7 +19,7 @@ export const GET = async (req: NextRequest) => {
         statusText: `User not found with email '${email}' for password reset.`,
       });
 
-    const code = sign({ authId: user.authId }, process.env.JWT_SECRET!, { expiresIn: "1h" });
+    const code = await signToken({ authId: user.authId }, 60 * 60);
     const resetLink = `${new URL(req.url).origin}/reset-password?code=${code}`;
 
     await setResetPasswordCode(user.authId, code);
@@ -50,8 +49,9 @@ export const POST = async (req: Request) => {
     const { success, data } = resetPasswordSchema.safeParse(body);
     if (!success) return new NextResponse(null, { status: 400, statusText: "Invalid data." });
 
-    const { error, payload } = validateToken<{ authId: string }>(data.code);
-    if (error !== null) return new NextResponse(null, { status: 400, statusText: error });
+    const payload = await validateToken<{ authId: string }>(data.code);
+    if (payload == null)
+      return new NextResponse(null, { status: 400, statusText: "Invalid token. Please retry within 1h." });
 
     const hashedPass = await hash(data.newPassword, 10);
 

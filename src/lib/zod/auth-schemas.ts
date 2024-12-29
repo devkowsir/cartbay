@@ -13,15 +13,12 @@ export const signInSchema = signUpSchema.omit({ name: true });
 
 export type TSignInSchema = z.infer<typeof signUpSchema>;
 
-export const userResponseSchema = z.object({
+export const tokenPayloadSchema = z.object({
+  id: z.string(),
   name: z.string(),
   email: z.string(),
   photoUrl: z.string().nullable(),
-  role: z.enum(USER_ROLES),
-});
-
-export const refreshTokenPayloadSchema = z.object({
-  id: z.string(),
+  roles: z.enum(USER_ROLES).array(),
 });
 
 export const resetPasswordSchema = z.object({

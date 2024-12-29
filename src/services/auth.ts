@@ -13,7 +13,7 @@ export const getUserData = async (email: string) => {
     email: data.users.email,
     name: data.users.name,
     photoUrl: data.users.photoUrl,
-    role: data.users.role as UserRole,
+    roles: data.users.roles as UserRole[],
     profile: data.users.profile,
     createdAt: data.users.createdAt,
     authId: data.auth.id,

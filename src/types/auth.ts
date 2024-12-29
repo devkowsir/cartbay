@@ -5,11 +5,10 @@ export type TokenPayload = {
   name: string;
   email: string;
   photoUrl: string | null;
-  role: UserRole;
+  roles: UserRole[];
 };
 
-export type UserRoles = typeof userRole.enumValues;
-export type UserRole = UserRoles[number];
+export type UserRole = (typeof userRole.enumValues)[number];
 export type User = typeof users.$inferSelect;
 export type AuthType = typeof authType.enumValues;
 export type Auth = typeof auth.$inferSelect;
