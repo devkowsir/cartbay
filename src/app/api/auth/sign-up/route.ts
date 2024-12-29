@@ -27,8 +27,6 @@ export const POST = async (req: NextRequest) => {
       return user;
     });
 
-    console.log(user);
-
     const response = new NextResponse(null, { status: 200, statusText: "Successfully signed in." });
     const { token, options } = await getAuthCookie(user);
     response.cookies.set("token", token, options);
