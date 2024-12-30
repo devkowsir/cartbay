@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect, RedirectType, useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { LuEye, LuEyeOff, LuLoaderCircle } from "react-icons/lu";
 import { z } from "zod";
@@ -17,9 +17,9 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-const Page = ({ searchParams }: { searchParams: Promise<{ code: string | null }> }) => {
+const Page = ({ searchParams }: { searchParams: { code: string | null } }) => {
   const router = useRouter();
-  const { code } = use(searchParams);
+  const { code } = searchParams;
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const { toast } = useToast();
