@@ -9,15 +9,15 @@ export const GET = async (req: NextRequest) => {
   try {
     const email = new URL(req.url).searchParams.get("email");
 
-    if (!email) return new NextResponse(null, { status: 400, statusText: "Email is required." });
+    if (!email) return NextResponse.json({ message: "Email is required." }, { status: 400 });
 
     const user = await getUserData(email);
 
     if (!user)
-      return new NextResponse(null, {
-        status: 400,
-        statusText: `User not found with email '${email}' for password reset.`,
-      });
+      return NextResponse.json(
+        { message: `User not found with email '${email}' for password reset.` },
+        { status: 400 }
+      );
 
     const code = await signToken({ authId: user.authId }, 60 * 60);
     const resetLink = `${new URL(req.url).origin}/reset-password?code=${code}`;
@@ -32,13 +32,13 @@ export const GET = async (req: NextRequest) => {
         <p><a href="${resetLink}" style="font-size: 1.25rem; text-align: center; color: #2841a4;">Reset password</a></p>
       </div>`
     );
-    return new NextResponse(null, { status: 200, statusText: response });
+    return NextResponse.json({ message: response }, { status: 200 });
   } catch (error) {
     console.error(error);
-    return new NextResponse(null, {
-      status: 500,
-      statusText: error instanceof Error ? error.message : "Something went wrong!",
-    });
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Something went wrong!" },
+      { status: 500 }
+    );
   }
 };
 
@@ -47,22 +47,22 @@ export const POST = async (req: Request) => {
     const body = await req.json();
 
     const { success, data } = resetPasswordSchema.safeParse(body);
-    if (!success) return new NextResponse(null, { status: 400, statusText: "Invalid data." });
+    if (!success) return NextResponse.json({ message: "Invalid data." }, { status: 400 });
 
     const payload = await validateToken<{ authId: string }>(data.code);
     if (payload == null)
-      return new NextResponse(null, { status: 400, statusText: "Invalid token. Please retry within 1h." });
+      return NextResponse.json({ message: "Invalid token. Please retry within 1h." }, { status: 400 });
 
     const hashedPass = await hash(data.newPassword, 10);
 
     await updatePassword(payload.authId, hashedPass);
 
-    return new NextResponse(null, { status: 200, statusText: "Password has been updated." });
+    return NextResponse.json({ message: "Password has been updated." }, { status: 200 });
   } catch (error) {
     console.error(error);
-    return new NextResponse(null, {
-      status: 500,
-      statusText: error instanceof Error ? error.message : "Something went wrong!",
-    });
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Something went wrong!" },
+      { status: 500 }
+    );
   }
 };

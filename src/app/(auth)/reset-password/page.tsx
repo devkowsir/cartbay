@@ -44,7 +44,8 @@ const Page = ({ searchParams }: { searchParams: Promise<{ code: string | null }>
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ code, newPassword: data.password }),
       });
-      if (!response.ok) throw new Error(response.statusText);
+      const { message } = await response.json();
+      if (!response.ok) throw new Error(message);
       toast({ title: "Password reset was successful." });
       router.push("/sign-in");
     } catch (err) {

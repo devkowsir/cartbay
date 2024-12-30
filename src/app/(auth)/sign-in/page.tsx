@@ -49,7 +49,8 @@ const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | nul
         headers: { "content-type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error(response.statusText);
+      const { message } = await response.json();
+      if (!response.ok) throw new Error(message);
       router.push(redirect ? decodeURIComponent(redirect) : "/");
       toast({ title: "Sign In Successful." });
     } catch (err) {
@@ -64,7 +65,8 @@ const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | nul
     try {
       const email = getValues("email");
       const response = await fetch(`/api/auth/reset-password?email=${email}`);
-      if (!response.ok) throw new Error(response.statusText);
+      const { message } = await response.json();
+      if (!response.ok) throw new Error(message);
       toast({ title: "A password reset link has been sent." });
     } catch (err) {
       if (err instanceof Error) toast({ title: err.message, variant: "destructive" });

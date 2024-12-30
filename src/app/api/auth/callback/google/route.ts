@@ -85,9 +85,9 @@ export const GET = async (req: NextRequest) => {
     return response;
   } catch (error) {
     console.error(error);
-    return new NextResponse(null, {
-      status: 500,
-      statusText: error instanceof Error ? error.message : "Something went wrong!",
-    });
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Something went wrong!" },
+      { status: 500 }
+    );
   }
 };

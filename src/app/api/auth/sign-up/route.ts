@@ -10,14 +10,13 @@ export const POST = async (req: NextRequest) => {
     const body = await req.json();
     const { data, success } = signUpSchema.safeParse(body);
 
-    if (!success) return new NextResponse(null, { status: 400, statusText: "Invalid SignUp Data." });
+    if (!success) return NextResponse.json({ message: "Invalid SignUp Data." }, { status: 400 });
 
     const { email, name, password } = data;
 
     const userExist = await getUserData(email);
 
-    if (userExist)
-      return new NextResponse(null, { status: 409, statusText: `User already exists with email ${email}` });
+    if (userExist) return NextResponse.json({ message: `User already exists with email ${email}` }, { status: 409 });
 
     const hashedPass = await bcrypt.hash(password, 10);
 
@@ -27,15 +26,15 @@ export const POST = async (req: NextRequest) => {
       return user;
     });
 
-    const response = new NextResponse(null, { status: 200, statusText: "Successfully signed in." });
+    const response = NextResponse.json({ message: "Successfully signed in." }, { status: 200 });
     const { token, options } = await getAuthCookie(user);
     response.cookies.set("token", token, options);
     return response;
   } catch (error) {
     console.error(error);
-    return new NextResponse(null, {
-      status: 500,
-      statusText: error instanceof Error ? error.message : "Something went wrong!",
-    });
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Something went wrong!" },
+      { status: 500 }
+    );
   }
 };

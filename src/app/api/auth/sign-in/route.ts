@@ -9,32 +9,29 @@ export const POST = async (req: NextRequest) => {
     const body = await req.json();
     const { data, success } = signInSchema.safeParse(body);
 
-    if (!success) return new NextResponse(null, { status: 400, statusText: "Invalid SignUp Data." });
+    if (!success) return NextResponse.json({ message: "Invalid SignIn Data." }, { status: 400 });
 
     const { email, password } = data;
 
     const user = await getUserData(email);
 
-    if (!user) return new NextResponse(null, { status: 401, statusText: `User not found with email ${email}` });
+    if (!user) return NextResponse.json({ message: `User not found with email ${email}` }, { status: 401 });
     if (user.authType !== "email")
-      return new NextResponse(null, {
-        status: 400,
-        statusText: `You are not registered using email and password method.`,
-      });
+      return NextResponse.json({ message: `You are not registered using email and password method.` }, { status: 400 });
 
     const isPasswordValid = await bcrypt.compare(password, user.hashedPass!);
 
-    if (!isPasswordValid) return new NextResponse(null, { status: 401, statusText: `Password did not match.` });
+    if (!isPasswordValid) return NextResponse.json({ message: `Password did not match.` }, { status: 401 });
 
-    const response = new NextResponse(null, { status: 200, statusText: "Successfully signed in." });
+    const response = NextResponse.json({ message: "Successfully signed in." }, { status: 200 });
     const { token, options } = await getAuthCookie(user);
     response.cookies.set("token", token, options);
     return response;
   } catch (error) {
     console.error(error);
-    return new NextResponse(null, {
-      status: 500,
-      statusText: error instanceof Error ? error.message : "Something went wrong!",
-    });
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Something went wrong!" },
+      { status: 500 }
+    );
   }
 };

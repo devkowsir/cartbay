@@ -32,7 +32,8 @@ const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | nul
         headers: { "content-type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error(response.statusText);
+      const { message } = await response.json();
+      if (!response.ok) throw new Error(message);
       router.push(redirect ? decodeURIComponent(redirect) : "/");
       toast({ title: "Sign Up Successful." });
     } catch (err) {
