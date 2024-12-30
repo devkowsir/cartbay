@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiLogoGoogle } from "react-icons/bi";
 import { z } from "zod";
@@ -28,9 +28,9 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | null }> }) => {
+const Page = ({ searchParams }: { searchParams: { redirect: string | null } }) => {
   const router = useRouter();
-  const { redirect } = use(searchParams);
+  const { redirect } = searchParams;
   const [isReseting, setIsReseting] = useState(false);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isPasswordResetDialogShown, setIsPasswordResetDialogShown] = useState(false);

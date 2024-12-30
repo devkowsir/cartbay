@@ -8,15 +8,15 @@ import { signUpSchema, type TSignUpSchema } from "@/lib/zod/auth-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiLogoGoogle } from "react-icons/bi";
 import { LuEye, LuEyeOff, LuLoaderCircle } from "react-icons/lu";
 import { z } from "zod";
 
-const Page = ({ searchParams }: { searchParams: Promise<{ redirect: string | null }> }) => {
+const Page = ({ searchParams }: { searchParams: { redirect: string | null } }) => {
   const router = useRouter();
-  const { redirect } = use(searchParams);
+  const { redirect } = searchParams;
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { toast } = useToast();
   const {
