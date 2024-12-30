@@ -6,8 +6,8 @@ import { GoogleUserInfo, GoogleUserTokens, User } from "@/types/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
+  const searchParams = req.nextUrl.searchParams;
   try {
-    const searchParams = new URL(req.url).searchParams;
     const code = searchParams.get("code");
     const error = searchParams.get("error");
     const origin = new URL(req.url).origin;
