@@ -19,7 +19,7 @@ export const GET = async (req: NextRequest) => {
         { status: 400 }
       );
 
-    const code = await signToken({ authId: user.authId }, 60 * 60);
+    const code = await signToken({ authId: user.authId }, 5 * 60);
     const resetLink = `${new URL(req.url).origin}/reset-password?code=${code}`;
 
     await setResetPasswordCode(user.authId, code);
@@ -29,6 +29,7 @@ export const GET = async (req: NextRequest) => {
       "Reset Password.",
       `<div>
         <p style="margin-bottom: 1rem">If you have requested to reset password follow the link below, otherwise ignore.</p>
+        <p style="margin-bottom: 1rem">The link will expire within 5 miniutes.</p>
         <p><a href="${resetLink}" style="font-size: 1.25rem; text-align: center; color: #2841a4;">Reset password</a></p>
       </div>`
     );
